@@ -1,17 +1,10 @@
-## Development and CI/CD Dockerfile for GenericMappingTools/GMT
-##
-## Approach: Build-last and do not rebuild layers on file changes
+## Build Environment Dockerfile for GenericMappingTools/GMT
 ##
 ## 1. Install Build and Bin Dependencies
 ## 2. Fetch DCW/GSSHG data
-## 3. Copy local repository and build
 ##
-## Fetching DCW/GSSHG data and Dependencies early preserves layer cache
-## for local developers. Editing a file in the repository should only
-## trigger a rebuild without re-fetching data and dependencies.
-##
-## This is a development image so build dependencies and apt lists
-## are left installed 
+## Images seeking to use this image should extend and then add their own
+## Environment and build steps
 ##
 FROM ubuntu:16.04
 LABEL maintainer="akshmakov@nc5ng.org"
@@ -43,8 +36,11 @@ ARG GSHHG_VERSION=2.3.7
 ARG DCW_VERSION=1.1.4
 ARG GMT_INSTALL_DIR=/opt/gmt
 ENV GMT_DCW_FTP=ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-$DCW_VERSION.tar.gz \
-    GMT_GSHHG_FTP=ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-$GSHHG_VERSION.tar.gz
-
+    GMT_GSHHG_FTP=ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-$GSHHG_VERSION.tar.gz \
+    GMT_INSTALL_DIR=$GMT_INSTALL_DIR \
+    DCW_VERSION=$DCW_VERSION \
+    GSHHG_VERSION=$GSHHG_VERSION
+    
 RUN   mkdir -p $GMT_INSTALL_DIR				 &&\
       cd $GMT_INSTALL_DIR			 	 &&\
       wget $GMT_DCW_FTP					 &&\
